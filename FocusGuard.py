@@ -19,7 +19,7 @@ def play_video(video_path: str) -> None:
 
     while True:
         ret, frame = cap.read()
-        if not ret:
+        if not ret or frame is None or frame.size == 0:
             break
 
         cv2.imshow("Video", frame)
@@ -34,13 +34,15 @@ def play_video(video_path: str) -> None:
 
 def main() -> None:
     gaze = GazeTracking()
-    webcam = cv2.VideoCapture(0)
+    webcam = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
     if not webcam.isOpened():
         print("cannot open webcam")
         return
 
-    video_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "video.mp4")
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    video_path = os.path.join(base_dir, "assets", "video.mp4")
+
     if not os.path.exists(video_path):
         print(f"video not found: {video_path}")
         webcam.release()
@@ -53,7 +55,7 @@ def main() -> None:
 
     while True:
         ret, frame = webcam.read()
-        if not ret:
+        if not ret or frame is None or frame.size == 0:
             print("cannot read webcam frame")
             break
 
